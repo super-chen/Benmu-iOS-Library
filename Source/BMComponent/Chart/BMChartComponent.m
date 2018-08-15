@@ -15,7 +15,7 @@
 
 NSString * const ChartInfo = @"options";
 
-@interface BMChartComponent()<WKNavigationDelegate>
+@interface BMChartComponent()<WKNavigationDelegate,WKScriptMessageHandler>
 
 @property (nonatomic,strong) WKWebView *webview;    /**< webView */
 @property (nonatomic,copy) NSString *chartInfo;     /**< 图标数据 */
@@ -23,16 +23,20 @@ NSString * const ChartInfo = @"options";
 
 /** event */
 @property (nonatomic,assign) BOOL finishEvent; /**< 图表加载完毕事件 */
+@property (nonatomic,assign) BOOL clickEvent; /**< 图片点击事件 */
 
 @end
 
 @implementation BMChartComponent
+
+WX_EXPORT_METHOD(@selector(reloadWithOption:))
 
 - (instancetype)initWithRef:(NSString *)ref type:(NSString *)type styles:(NSDictionary *)styles attributes:(NSDictionary *)attributes events:(NSArray *)events weexInstance:(WXSDKInstance *)weexInstance
 {
     if (self = [super initWithRef:ref type:type styles:styles attributes:attributes events:events weexInstance:weexInstance]) {
         
         _finishEvent = NO;
+        _clickEvent = NO;
         
         if (attributes[ChartInfo]) {
             _chartInfo = [NSString stringWithFormat:@"%@",attributes[ChartInfo]];
@@ -51,12 +55,20 @@ NSString * const ChartInfo = @"options";
 - (void)createWebView
 {
     WXPerformBlockOnMainThread(^{
-        WKWebView *webview = [[WKWebView alloc] init];
+        //进行配置控制器
+        WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
+        //实例化对象
+        configuration.userContentController = [WKUserContentController new];
+        
+        //调用JS方法
+        [configuration.userContentController addScriptMessageHandler:self name:@"click"];
+        
+        WKWebView *webview = [[WKWebView alloc] initWithFrame:self.view.bounds configuration:configuration];
         webview.navigationDelegate = self;
         webview.scrollView.scrollEnabled = NO;
         webview.opaque = NO;
         self.webview = webview;
-        
+    
         if (!self.src) {
             [self loadHtmlFormBundle];
             return;
@@ -71,6 +83,27 @@ NSString * const ChartInfo = @"options";
     });
 }
 
+-(void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message{
+    if ([message.name isEqualToString:@"click"]) {
+        if(_clickEvent){
+            NSError *error;
+            NSData *jsonData = [NSJSONSerialization dataWithJSONObject:message.body options:NSJSONWritingPrettyPrinted error:&error];
+            NSString *data = @"{}";
+            
+            if (jsonData) {
+                data = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+            }
+            [self fireEvent:@"click" params:@{@"status":@1,@"data":data}];
+        }
+    }
+}
+
+- (void)reloadWithOption:(NSDictionary *)attributes{
+    if (attributes[ChartInfo]) {
+        self.chartInfo = [NSString stringWithFormat:@"%@",attributes[ChartInfo]];
+    }
+    [self.webview reload];
+}
 /** 从工程中加载 html */
 - (void)loadHtmlFormBundle
 {
@@ -98,6 +131,10 @@ NSString * const ChartInfo = @"options";
 {
     if ([eventName isEqualToString:@"finish"]) {
         _finishEvent = YES;
+    }
+    
+    if ([eventName isEqualToString:@"click"]) {
+        _clickEvent = YES;
     }
 }
 
@@ -162,7 +199,6 @@ NSString * const ChartInfo = @"options";
 //    NSString *echartJsPath = [[NSBundle mainBundle] pathForResource:@"echarts.min" ofType:@"js"];
 //    NSString *echartJsStr = [NSString stringWithContentsOfFile:echartJsPath encoding:NSUTF8StringEncoding error:nil];
 //    [self webViewRunScript:echartJsStr];
-
     //    NSString *script = @"setOption({'tooltip':{'show':true},'legend':{'data':['数量（吨）']},'xAxis':[{'type':'category','data':['桔子','香蕉','苹果','西瓜']}],'yAxis':[{'type':'value'}],'series':[{'name':'数量（吨）','type':'bar','data':[100,200,300,400]}]})";
     
     [self runChatInfo];

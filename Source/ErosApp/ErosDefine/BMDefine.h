@@ -56,7 +56,9 @@
 #define K_BMTabbarChangeIndex               @"BMTabbarChangeIndex"
 
 /**----------------------------- key ------------------------------------*/
-#define K_HomePagePath @"HomePagePathKey"
+// iCoastline 自定义
+#define K_HomePagePath @"HomePagePath"
+//#define K_HomePagePath @"HomePagePathKey"
 #define K_BMTabbarInfo @"BMTabbarInfo"
 #define BM_LOCAL @"bmlocal"
 

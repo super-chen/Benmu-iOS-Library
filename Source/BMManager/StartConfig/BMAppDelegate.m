@@ -15,6 +15,7 @@
 #import <CTMediator+BMPushActions.h>
 #import <CTMediator+BMShareActions.h>
 #import <CTMediator+BMPayActions.h>
+#import <UMCommon/UMCommon.h>
 
 @interface BMAppDelegate ()
 {
@@ -36,6 +37,9 @@
     
     /** 注册通知 当js更新文件准备就绪用户点击立即升级会触发这个方法 重新加载最新js资源文件 */
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(startApp) name:K_BMAppReStartNotification object:nil];
+    
+    [UMConfigure setEncryptEnabled:YES];
+    [UMConfigure initWithAppkey:@"5b2b87b1f43e4871c8000020" channel:@"App Store"];
     
     return YES;
 }

@@ -60,7 +60,7 @@
         NSDictionary *resData = @{
                                   @"status": errorCode,
                                   @"errorMsg": msg,
-                                  @"data": @{}
+                                  @"data": request.responseString ?: @""
                                   };
         
         if (resultBlock) {

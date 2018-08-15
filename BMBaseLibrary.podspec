@@ -25,6 +25,8 @@ Pod::Spec.new do |s|
   s.dependency 'SDWebImage', '3.7.6'
   s.dependency 'MJRefresh', '3.1.12'
   s.dependency 'CTMediator', '13'
+  s.dependency 'UMCCommon', '1.5.1'
+  s.dependency 'UMCAnalytics', '5.5.0'
 
   #Device信息非ARC
   s.subspec 'BMDevice' do |ss|
@@ -90,9 +92,10 @@ Pod::Spec.new do |s|
 
   #本木Weex BMManager
   s.subspec 'BMManager' do |ss|
-    ss.source_files  = "Source/BMManager/**/*.{c,h,m,mm,S}"
-    ss.public_header_files = "Source/BMManager/**/*.h"
-    ss.requires_arc  = true
+      ss.source_files  = "Source/BMManager/**/*.{c,h,m,mm,S}"
+      ss.public_header_files = "Source/BMManager/**/*.h"
+      ss.resources = 'Source/BMManager/Resources/*.png'
+      ss.requires_arc  = true
   end
 
   #本木自定义Handler

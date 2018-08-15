@@ -10,13 +10,14 @@
 #import <SSZipArchive/SSZipArchive.h>
 #import "BMCheckJsVersionRequest.h"
 #import "BMJSVersionModel.h"
-#import "YYModel.h"
+#import <YYModel.h>
 #import "BMUpdateBundlejsRequest.h"
 #import <SVProgressHUD.h>
 #import "NSData+bsdiff.h"
 #import "BMResourceCheck.h"
 #import "BMMediatorManager.h"
 #import "BMConfigManager.h"
+#import "UpgradeView.h"
 #import "BMHandlerFactory.h"
 #import "BMCheckUpdateProtocol.h"
 
@@ -55,7 +56,7 @@ typedef NS_ENUM(NSUInteger, BMResourceCheckUpdateCode) {
 
 
 
-@interface BMResourceManager()
+@interface BMResourceManager()<UIAlertViewDelegate>
 
 @property (nonatomic, strong) BMJSVersionModel *jsVModel;
 @property (nonatomic,readwrite) BMResourceVersion lastVerionType;
@@ -67,7 +68,9 @@ typedef NS_ENUM(NSUInteger, BMResourceCheckUpdateCode) {
 
 
 
-@implementation BMResourceManager
+@implementation BMResourceManager{
+    UpgradeView *upgradeView;
+}
 
 - (instancetype)init
 {
@@ -213,7 +216,9 @@ typedef NS_ENUM(NSUInteger, BMResourceCheckUpdateCode) {
 - (void)downloadRemoteJSResource:(NSDictionary*)downloadDict
 {
     
-    NSString * urlString = downloadDict[@"path"];
+    NSDictionary *weex = downloadDict[@"weex"];
+    NSString *urlString = weex[@"path"];
+    Boolean isForce = weex[@"isForce"];
     BOOL isDiff = [downloadDict[@"diff"] boolValue];
     
     if (urlString.length == 0) {
@@ -237,17 +242,23 @@ typedef NS_ENUM(NSUInteger, BMResourceCheckUpdateCode) {
     updateJsApi.resumableDownloadProgressBlock = ^(NSProgress *progress) {
         
         WXLogInfo(@"\n 下载进度>>>> 文件总大小：%lld 已下载：%lld",progress.totalUnitCount,progress.completedUnitCount);
+
+        float g = (float)progress.completedUnitCount / (float)progress.totalUnitCount;
         
-#ifdef DEBUG
-        [SVProgressHUD showProgress:((float)progress.completedUnitCount / (float)progress.totalUnitCount) status:@"js资源文件更新中..."];
-#endif
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [upgradeView.progressView setProgress:g animated:true];
+        });
+        
+//#ifdef DEBUG
+//        [SVProgressHUD showProgress:((float)progress.completedUnitCount / (float)progress.totalUnitCount) status:@"js资源文件更新中..."];
+//#endif
         
     };
     [updateJsApi startWithCompletionBlockWithSuccess:^(__kindof YTKBaseRequest * _Nonnull request) {
         
         WXLogInfo(@"%@ 下载js文件成功 Request_URL>>>>>>>>>>>>>>>>:%@",NSStringFromClass([request class]),request.requestTask.originalRequest);
         
-        [SVProgressHUD dismiss];
+//        [SVProgressHUD dismiss];
         
         /* 标记js文件缓存成功 */
         //判断是否是diff文件 如果是 需要bsdiff 如果不是 直接校验
@@ -353,7 +364,7 @@ typedef NS_ENUM(NSUInteger, BMResourceCheckUpdateCode) {
             
             NSData * configData = [NSJSONSerialization dataWithJSONObject:dict options:NSJSONWritingPrettyPrinted error:nil];
             if (configData.length > 0) {
-                
+                NSLog(@"%@",K_JS_CACHE_VERSION_PATH);
                 BOOL writeSuccess = [configData writeToFile:K_JS_CACHE_VERSION_PATH atomically:YES];
                 if (writeSuccess) {
                     
@@ -361,6 +372,7 @@ typedef NS_ENUM(NSUInteger, BMResourceCheckUpdateCode) {
                     
                     if (self.newJsBundleResPreparedBlock) {
                         dispatch_async(dispatch_get_main_queue(), ^{
+                            [upgradeView removeFromSuperview];
                             self.newJsBundleResPreparedBlock(YES,@"更新资源准备就绪");
                         });
                     }
@@ -463,7 +475,6 @@ typedef NS_ENUM(NSUInteger, BMResourceCheckUpdateCode) {
     BMCheckJsVersionRequest *checkVersionApi = [[BMCheckJsVersionRequest alloc] initWithAppName:[BMConfigManager shareInstance].platform.appName appVersion:K_APP_VERSION jsVersion:jsVersion isDiff:isDiff];
     
     
-    
     [checkVersionApi startWithCompletionBlockWithSuccess:^(__kindof YTKBaseRequest * _Nonnull request) {
         
         WXLogInfo(@"%@ Request_Success >>>>>>>>>>>>>>>>:%@",NSStringFromClass([self class]),request.requestTask.originalRequest);
@@ -473,10 +484,42 @@ typedef NS_ENUM(NSUInteger, BMResourceCheckUpdateCode) {
         NSDictionary *data = result[@"data"];
         
         if ([resCode intValue] == BMResourceCheckUpdateSuccess && data) {
+            UIAlertController * alertController = [UIAlertController alertControllerWithTitle:@"提示" message:@"提示信息" preferredStyle:UIAlertControllerStyleAlert];
             
-            // 有更新版本
-            [weakSelf downloadRemoteJSResource:data];
+            NSDictionary *app = data[@"app"];
+            NSDictionary *weex = data[@"weex"];
+            BOOL isForce = false;
+            BOOL isAPP = false;
+            if(app){
+                isForce = [app[@"isForce"] boolValue];
+                isAPP = true;
+            }else{
+                isForce = [weex[@"isForce"] boolValue];
+                isAPP = false;
+            }
+            if(!upgradeView){
+                upgradeView = [[UpgradeView alloc] init];
+                upgradeView.title = data[@"log"][@"title"];
+                upgradeView.content = data[@"log"][@"content"];
+                upgradeView.isForce = isForce;
+                upgradeView.isAPP = isAPP;
+                [upgradeView drawView];
+                upgradeView.clickUpgrade = ^() {
+                    if(isAPP){
+                        NSString *str = [NSString stringWithFormat:
+                                         app[@"path"]];
+                        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:str]];
+                    }else{
+                        [weakSelf downloadRemoteJSResource:data];
+                    }
+                };
+            }
             
+            if(!isAPP && isForce){
+                [weakSelf downloadRemoteJSResource:data];
+            }
+            
+            [[UIApplication sharedApplication].keyWindow.rootViewController.view addSubview:upgradeView];
         }
         else if([resCode intValue] == BMResourceCheckUpdateFail){
             
@@ -485,8 +528,7 @@ typedef NS_ENUM(NSUInteger, BMResourceCheckUpdateCode) {
         }else if ([resCode intValue] == BMResourceCheckUpdateLasted){
             
             // 已是最新版本
-        }
-        else{
+        }else{
             
             
         }

@@ -27,6 +27,7 @@
 
 #import "BMMediatorManager.h"
 #import "BMGlobalEventManager.h"
+#import <UMAnalytics/MobClick.h>
 
 @interface BMBaseViewController () <UIScrollViewDelegate, UIWebViewDelegate>
 
@@ -138,6 +139,14 @@
     
     // 通知js页面生命周期
     if (self.controllerState != BMControllerStateOpen) [BMGlobalEventManager sendViewLifeCycleEventWithInstance:_instance event:BMViewWillAppear controllerState:self.controllerState];
+    
+    //友盟统计
+    NSMutableString *router = [[NSMutableString alloc] initWithString:self.url.absoluteString];
+    NSRange substr = [router rangeOfString:@"http://192.168.2.122:8889/dist/"];
+    if (substr.location != NSNotFound) {
+        [router deleteCharactersInRange:substr];
+    }
+    [MobClick beginLogPageView:router];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -156,6 +165,13 @@
     [self cancelAllRequest];
     
     [BMGlobalEventManager sendViewLifeCycleEventWithInstance:_instance event:BMViewWillDisappear controllerState:self.controllerState];
+    
+    NSMutableString *router = [[NSMutableString alloc] initWithString:self.url.absoluteString];
+    NSRange substr = [router rangeOfString:@"http://192.168.2.122:8889/dist/"];
+    if (substr.location != NSNotFound) {
+        [router deleteCharactersInRange:substr];
+    }
+    [MobClick endLogPageView:router];
 }
 
 - (void)viewDidDisappear:(BOOL)animated

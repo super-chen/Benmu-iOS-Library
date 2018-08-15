@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="UpgradeViewController" customModule="UpgradeViewController">
+            <connections>
+                <outlet property="btn_upgrade" destination="h4z-KQ-KBR" id="a87-Gh-cPA"/>
+                <outlet property="lab_title" destination="XOf-Bv-xtR" id="Rcz-Kk-mBX"/>
+                <outlet property="text_content" destination="ABa-7b-ufz" id="rf3-ja-qtZ"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="J4L-4x-MvG">
+                    <rect key="frame" x="22" y="133.5" width="330" height="400"/>
+                    <subviews>
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="upgradeBackground.png" translatesAutoresizingMaskIntoConstraints="NO" id="cjB-Vj-Wht">
+                            <rect key="frame" x="0.0" y="-53" width="330" height="226"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="226" id="WcJ-pg-eZu"/>
+                            </constraints>
+                        </imageView>
+                        <textView clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="ABa-7b-ufz">
+                            <rect key="frame" x="20" y="213" width="290" height="120"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <string key="text">1、增加JWT支持
+2、增加SCC功能
+3、增加手势支持
+1、增加JWT支持
+2、增加SCC功能
+3、增加手势支持
+1、增加JWT支持
+2、增加SCC功能
+3、增加手势支持</string>
+                            <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
+                            <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                        </textView>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XOf-Bv-xtR">
+                            <rect key="frame" x="20" y="178" width="290" height="25"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="h4z-KQ-KBR">
+                            <rect key="frame" x="20" y="350" width="290" height="35"/>
+                            <color key="backgroundColor" red="0.1764705882352941" green="0.5490196078431373" blue="0.94117647058823528" alpha="1" colorSpace="calibratedRGB"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="35" id="8Br-hI-0lp"/>
+                                <constraint firstAttribute="width" constant="290" id="dSg-dt-zwE"/>
+                            </constraints>
+                            <state key="normal" title="升 级">
+                                <color key="titleColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </state>
+                        </button>
+                    </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <constraints>
+                        <constraint firstAttribute="bottom" secondItem="h4z-KQ-KBR" secondAttribute="bottom" constant="15" id="H71-J0-pPX"/>
+                        <constraint firstAttribute="height" constant="400" id="KIz-Lf-lVT"/>
+                        <constraint firstAttribute="width" constant="330" id="Ua4-3Q-iEx"/>
+                        <constraint firstItem="h4z-KQ-KBR" firstAttribute="centerX" secondItem="J4L-4x-MvG" secondAttribute="centerX" id="cnO-nI-VGk"/>
+                        <constraint firstItem="cjB-Vj-Wht" firstAttribute="top" secondItem="J4L-4x-MvG" secondAttribute="top" constant="-53" id="uYJ-8i-6av"/>
+                        <constraint firstItem="cjB-Vj-Wht" firstAttribute="leading" secondItem="J4L-4x-MvG" secondAttribute="leading" id="xGm-Vh-PXO"/>
+                    </constraints>
+                </view>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vhK-FZ-Lt4">
+                    <rect key="frame" x="167.5" y="533.5" width="40" height="100"/>
+                    <constraints>
+                        <constraint firstAttribute="width" constant="40" id="6gg-JQ-8td"/>
+                        <constraint firstAttribute="height" constant="100" id="NyU-Wg-NOg"/>
+                    </constraints>
+                    <state key="normal" image="upgradeClose.png"/>
+                </button>
+            </subviews>
+            <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+            <constraints>
+                <constraint firstItem="vhK-FZ-Lt4" firstAttribute="top" secondItem="J4L-4x-MvG" secondAttribute="bottom" id="UTH-vN-B4T"/>
+                <constraint firstItem="vhK-FZ-Lt4" firstAttribute="top" secondItem="J4L-4x-MvG" secondAttribute="bottom" id="Vy4-qa-Njc"/>
+                <constraint firstItem="vhK-FZ-Lt4" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="Z9F-Vx-Koy"/>
+                <constraint firstItem="J4L-4x-MvG" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="a9d-F0-NDa"/>
+                <constraint firstItem="J4L-4x-MvG" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="bja-s1-BRO"/>
+            </constraints>
+            <viewLayoutGuide key="safeArea" id="Q5M-cg-NOt"/>
+            <point key="canvasLocation" x="26.5" y="51.5"/>
+        </view>
+    </objects>
+    <resources>
+        <image name="upgradeBackground.png" width="330" height="216"/>
+        <image name="upgradeClose.png" width="42" height="101"/>
+    </resources>
+</document>
