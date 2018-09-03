@@ -23,7 +23,7 @@
     
     CGFloat pixelScale = [WXUtility defaultPixelScaleFactor];
     
-    contentHeight = contentHeight/(pixelScale*2);
+    contentHeight = contentHeight/pixelScale;
     
     [self fireEvent:@"bmPageFinish" params:@{@"contentHeight": @(contentHeight)}];
 }
@@ -36,8 +36,6 @@
     
     JSContext *jsContext = [self valueForKey:@"jsContext"];
     BMNative *bmnative = [[BMNative alloc] init];
-    jsContext[@"bmnative"] = bmnative;
-    
     if (self.attributes[@"scrollEnabled"] && NO == [self.attributes[@"scrollEnabled"] boolValue]) {
         webview.scrollView.scrollEnabled = NO;
     }
@@ -63,6 +61,11 @@
         UIWebView * webview = (UIWebView *)self.view;
         
         if(webview){
+            NSString *html = self.attributes[@"htmlString"];
+            if(html != nil){
+                [webview loadHTMLString:html baseURL:nil];
+                return;
+            }
             NSURL *urlPath = [NSURL URLWithString:url];
             if([urlPath.scheme isEqualToString:BM_LOCAL]){
                 if (BM_InterceptorOn()) {
