@@ -8,6 +8,7 @@
 
 #import "WXScrollerComponent+BMExtend.h"
 #import <BMDotGifHeader.h>
+#import <BMDotAutoGifFooter.h>
 
 @implementation WXScrollerComponent (BMExtend)
 
@@ -94,11 +95,11 @@ WX_EXPORT_METHOD(@selector(loadMoreEnd));
             [self refresh];
         }];
 
-        header.lastUpdatedTimeLabel.hidden = YES;
         NSString *refreshingTitle = objc_getAssociatedObject(self, "bm_refreshingTitle");
         if (refreshingTitle) {
             [header setTitle:refreshingTitle forState:MJRefreshStateRefreshing];
         }else{
+            header.lastUpdatedTimeLabel.hidden = YES;
             header.stateLabel.hidden = YES;
         }
         scrollView.mj_header = header;
@@ -113,13 +114,19 @@ WX_EXPORT_METHOD(@selector(loadMoreEnd));
     
     NSNumber *showLoadMore = objc_getAssociatedObject(self, "bm_showLoadMore");
     if (showLoadMore && [showLoadMore boolValue]) {
-        MJRefreshAutoNormalFooter *footer = [MJRefreshAutoNormalFooter footerWithRefreshingBlock:^{
+        
+        BMDotAutoGifFooter *footer = [BMDotAutoGifFooter footerWithRefreshingBlock:^{
             [self loadMore];
         }];
+        
         NSString *loadingMoreTitle = objc_getAssociatedObject(self, "bm_loadingMoreTitle");
+        
         if (loadingMoreTitle) {
             [footer setTitle:loadingMoreTitle forState:MJRefreshStateRefreshing];
             [footer setTitle:loadingMoreTitle forState:MJRefreshStateIdle];
+        }else{
+            footer.refreshingTitleHidden = YES;
+            footer.stateLabel.hidden = YES;
         }
         scrollView.mj_footer = footer;
     }
